@@ -1,4 +1,3 @@
-
 package supermercado;
 
 import java.io.BufferedReader;
@@ -16,7 +15,7 @@ import java.util.Scanner;
 
 public class SuperMercado {
 
-    private ArrayList<Cliente> clientes;
+    private ArrayList<BaseDados> clientes;
     private ArrayList<Produto> produtos;
     private ArrayList<Promocao> promocao;
     
@@ -25,7 +24,7 @@ public class SuperMercado {
         produtos = new ArrayList<>();
         promocao = new ArrayList<>();
     }
-
+      
     public String login(){
         Boolean correct = false;
         String nova = "";
@@ -35,9 +34,8 @@ public class SuperMercado {
             if (scDados.hasNext()) {
                  if (scDados.hasNext()) {
                     nova = scDados.nextLine();}}
-            for(Cliente c: clientes){
-                if(nova.equals(c.getEmail())){
-                    
+            for(BaseDados c: clientes){
+                if(nova.equals(c.getCliente().getEmail())){
                 correct = true;
             }
             }
@@ -71,8 +69,8 @@ public class SuperMercado {
         
     }while(escolha!=4);
 }
-    public ArrayList<Cliente> readFichClients(File f){
-     ArrayList<Cliente> clientes;
+    public ArrayList<BaseDados> readFichClients(File f){
+     ArrayList<BaseDados> clientes;
      clientes = new ArrayList<>();
              if(f.exists() && f.isFile() ) {
             try{
@@ -87,11 +85,13 @@ public class SuperMercado {
                     arr = line.split(",");
                     if(arr[0].equals("REG")&& arr.length == 6){
                         Cliente novo = new Cliente(arr[1],arr[2],arr[3],Integer.parseInt(arr[4]),arr[5],1);
-                        clientes.add(novo);
+                        BaseDados nova = new BaseDados(novo);
+                        clientes.add(nova);
                      }
                     else if(arr[0].equals("NORM")&& arr.length == 6){
                         Cliente novo = new Cliente(arr[1],arr[2],arr[3],Integer.parseInt(arr[4]),arr[5],0);
-                        clientes.add(novo);
+                        BaseDados nova = new BaseDados(novo);
+                        clientes.add(nova);
                     }
                     }
             }catch (NumberFormatException e){
@@ -196,7 +196,7 @@ public class SuperMercado {
 }
       
     public void makeFichClients(File ftext,File fobj){
-    ArrayList<Cliente> list = readFichClients(ftext);
+    ArrayList<BaseDados> list = readFichClients(ftext);
             try{
         FileOutputStream fos= new FileOutputStream(fobj);
         ObjectOutputStream oos= new ObjectOutputStream(fos);
@@ -259,12 +259,12 @@ System.out.println("Erro a ler ficheiro.");} catch (ClassNotFoundException ex) {
           System.out.println("Erro a converter objeto.");
        } 
 }        
-    public void leFicheiroClients(ArrayList<Cliente>listaClientes,File fobj){
+    public void leFicheiroClients(ArrayList<BaseDados>listaClientes,File fobj){
     try{
 FileInputStream fis = new FileInputStream(fobj);
 ObjectInputStream ois= new ObjectInputStream(fis);
-ArrayList<Cliente> x = (ArrayList<Cliente>)ois.readObject();
-for(Cliente c:x){
+ArrayList<BaseDados> x = (ArrayList<BaseDados>)ois.readObject();
+for(BaseDados c:x){
     listaClientes.add(c);
 }
 ois.close();
@@ -300,8 +300,8 @@ System.out.println("Erro a ler ficheiro.");} catch (ClassNotFoundException ex) {
     public static void main(String[] args) {
         SuperMercado bomDia = new SuperMercado();
         bomDia.ficheiros();
-        /*bomDia.login();
-        bomDia.menu();*/      
+        bomDia.login();
+        /*bomDia.menu();*/      
 }
         
 
@@ -323,7 +323,7 @@ System.out.println("Erro a ler ficheiro.");} catch (ClassNotFoundException ex) {
             leFicheiroPromocao(promocao,fObjProm);
             leFicheiroProducts(produtos,fObjProducts);
         }
-        for(Cliente c: clientes){
+        for(BaseDados c: clientes){
             System.out.println(c+"\n");
            
         }
@@ -339,5 +339,6 @@ System.out.println("Erro a ler ficheiro.");} catch (ClassNotFoundException ex) {
  }
 }
 }
+
 
     
