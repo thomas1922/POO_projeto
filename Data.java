@@ -42,6 +42,15 @@ public class Data implements Serializable {
         return ano;
     }
     
+    public int comparaDatas(Data dataInicio, Data dataFim, Data dataHoje) {
+        if (dataHoje.ano >= dataInicio.ano && dataHoje.ano <= dataFim.ano) {
+            if (dataHoje.mes >= dataInicio.mes && dataHoje.mes <= dataFim.mes) {
+                    if (dataHoje.dia >= dataInicio.dia&&dataHoje.dia <= dataFim.dia) {
+                        return 1;}
+            }
+        }
+        return 0;
+    }
     public String toString(){
         return getDia()+"/"+getMes()+"/"+getAno();
     }
