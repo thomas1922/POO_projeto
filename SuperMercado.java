@@ -25,19 +25,7 @@ public class SuperMercado {
         produtos = new ArrayList<>();
         promocao = new ArrayList<>();
     }
-    
-    public Boolean comparaEmail(String x){
-        boolean y = false;
-        for(Cliente c: clientes){
-            if(c.getEmail()== x){
-                y = true;
-                break;
-            }
-            System.out.println();
-            }
-        return y;
-    }
-    
+
     public String login(){
         Boolean correct = false;
         String nova = "";
