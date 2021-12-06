@@ -1,10 +1,8 @@
 package supermercado;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-
-public class  Produto {
+public class  Produto implements Serializable {
    private int identificador;
    private String nome;
    private Double precoUnitario;
@@ -50,7 +48,7 @@ public class  Produto {
     }
    @Override
   public String toString(){
-      return " ";
+      return getNome()+" ";
   }
    
    
