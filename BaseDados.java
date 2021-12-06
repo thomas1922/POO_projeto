@@ -1,12 +1,12 @@
 
 package supermercado;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
-public class BaseDados {
+public class BaseDados implements Serializable {
     private Cliente cliente;
-    private List<Compra>compras;
+    private ArrayList<Compra>compras;
     public BaseDados(Cliente cliente){
         this.cliente=cliente;
         this.compras=new ArrayList<>();
@@ -16,7 +16,7 @@ public class BaseDados {
         this.cliente = cliente;
     }
 
-    public void setCompras(List<Compra> compras) {
+    public void setCompras(ArrayList<Compra> compras) {
         this.compras = compras;
     }
 
@@ -24,10 +24,14 @@ public class BaseDados {
         return cliente;
     }
 
-    public List<Compra> getCompras() {
+    public ArrayList<Compra> getCompras() {
         return compras;
     }
     public void addCompras(Compra compra){
         compras.add(compra);
+    }
+    @Override
+    public String toString(){
+        return "Dias" +getCompras();
     }
 }
