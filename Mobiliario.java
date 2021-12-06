@@ -1,10 +1,10 @@
 package supermercado;
 
-public class Mobiliario extends Produto {
+public class ProdutoMobiliario extends Produto {
     private int peso;
     private int dimensao;
     
-    public Mobiliario(int identificador, String nome, Double precoUnitario, int stock,int peso,int dimensao) {
+    public ProdutoMobiliario(int identificador, String nome, Double precoUnitario, int stock,int peso,int dimensao) {
         super(identificador, nome, precoUnitario, stock);
         this.peso = peso;
         this.dimensao = dimensao;
@@ -28,6 +28,6 @@ public class Mobiliario extends Produto {
     
     @Override
     public String toString(){
-        return " ";
+         return "Nome: "+getNome()+"  Preço Unitario: "+getPrecoUnitario()+"  Stock existente: "+getStock();
     }
 }
