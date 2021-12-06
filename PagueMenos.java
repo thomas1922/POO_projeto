@@ -1,7 +1,6 @@
-
 package supermercado;
 
-public class PagueMenos extends Promoçao {
+public class PagueMenos extends Promocao {
     public PagueMenos(String nomeProduto,Data dataInicio, Data dataFim, Data dataHoje){
         super(nomeProduto,dataInicio,dataFim,dataHoje);
     }
@@ -17,5 +16,9 @@ public class PagueMenos extends Promoçao {
         }
         desconto=preçoSemDesconto-preçoComDesconto;
         return desconto;
+    }
+    @Override
+    public String toString(){
+        return " ";
     }
 }
