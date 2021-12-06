@@ -1,13 +1,14 @@
 package supermercado;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Compra {
+public class Compra implements Serializable {
 
     private double preço;
-    private List<Produto> produtos;
+    private ArrayList<Produto> produtos;
 
-    public Compra(double preço, List<Produto> produtos) {
+    public Compra(double preço, ArrayList<Produto> produtos) {
         this.preço = preço;
         this.produtos = produtos;
     }
@@ -16,7 +17,7 @@ public class Compra {
         return preço;
     }
 
-    public List<Produto> getProdutos() {
+    public ArrayList<Produto> getProdutos() {
         return produtos;
     }
 
@@ -24,8 +25,11 @@ public class Compra {
         this.preço = preço;
     }
 
-    public void setProdutos(List<Produto> produtos) {
+    public void setProdutos(ArrayList<Produto> produtos) {
         this.produtos = produtos;
     }
-
+    @Override
+    public String toString(){
+        return " ";
+    }
 }
