@@ -10,75 +10,48 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class SuperMercado {
 
     private ArrayList<BaseDados> clientes;
     private ArrayList<Produto> produtos;
-    private ArrayList<Promoçao> promocao;
+    private ArrayList<Promocao> promocao;
 
     public SuperMercado() {
         clientes = new ArrayList<>();
         produtos = new ArrayList<>();
         promocao = new ArrayList<>();
     }
+    
+   
 
-    public void addCliente(BaseDados a) {
-        clientes.add(a);
-    }
-
-    public void addProduto(Produto b) {
-        produtos.add(b);
-    }
-
-    public void addPromocao(Promoçao c) {
-        promocao.add(c);
-    }
-
-    public Boolean comparaEmail(String x, ArrayList<BaseDados> clientes) {
-        boolean y = false;
-        for (BaseDados bd : clientes) {
-            if (bd.getCliente().getEmail().equals(x)) {
-                y = true;
-                break;
-            }
-            System.out.println();
-        }
-        return y;
-    }
-
-    public String login(File bd) {
-        ArrayList<BaseDados> clientes = new ArrayList<>();
-        clientes = readFichClients(bd);
+    public String login(){
         Boolean correct = false;
         String nova = "";
-        do {
+        do{
             Scanner scDados = new Scanner(System.in);
-            System.out.println("Insira o seu email:");
+            System.out.println("Insira o seu email");
             if (scDados.hasNext()) {
-                //    if (scDados.hasNext()) {//???????????
-                nova = scDados.nextLine();
-                //  }
+                 if (scDados.hasNext()) {
+                    nova = scDados.nextLine();}}
+            for(BaseDados c: clientes){
+                if(nova.equals(c.getCliente().getEmail())){
+                correct = true;
             }
-            for (BaseDados c : clientes) {
-                if (comparaEmail(nova, clientes)) {
-                    correct = true;
-                }
             }
-            if (correct == false) {
+            if(correct == false){
                 System.out.println("O email não existe ou está errado");
                 System.out.println("----------------------------------\n");
             }
-
-        } while (!correct);
+           
+        }while(!correct);  
         return nova;
     }
 
-    public void menu(File produtos, File baseDados, File promoçoes,Data hoje) {
+    public void menu(Data hoje) {
         int escolha = 0;
-        String email = login(baseDados);
+        String email = login();
         do {
             System.out.println("1-efetuar compra");
             System.out.println("2-Consultas compras efetuadas");
@@ -91,10 +64,10 @@ public class SuperMercado {
 
             switch (escolha) {
                 case 1:
-                    Compra compra = compra(produtos,promoçoes,hoje);
-                    atualizaBaseDados(compra, email, baseDados);
+                    Compra compra = compra(hoje);
+                    /*atualizaBaseDados(compra, email);*/
                     break;
-                case 2:;
+                case 2:/*consultaCompra(email);*/
                     break;
                 case 3:;
                     break;
@@ -106,30 +79,22 @@ public class SuperMercado {
         } while (escolha != 4);
     }
 
-    public Compra compra(File fprodutos, File fpromoçoes, Data hoje) {
-        ArrayList<Produto> produtosEmStock = new ArrayList<>();
-        produtosEmStock = readFichProducts(fprodutos);
-        for(Produto p:produtosEmStock){
-            System.out.println(p.getNome());
+    public Compra compra( Data hoje) {
+       
+        for(Produto p:produtos){
+            System.out.println(p);
         }
-        
-        
-        
-        ArrayList<Promoçao> promoçoes = new ArrayList<>();
-        promoçoes = readFichProm(fpromoçoes, hoje);
-        
-        List<Produto> produtos = new ArrayList<>();
         
         int quantidade = 0, i =0,aux=0, aux2=0;
         double custo=0.0;
         String simNao="";
         
         while(aux2==0){
-            Produto novoProduto = pedeProduto(produtosEmStock);
+            Produto novoProduto = pedeProduto(produtos);
             quantidade=pedeQuantidade(novoProduto);
-            produtos.add(novoProduto);
+            
         
-        for(Promoçao prom: promoçoes){
+        for(Promocao prom: promocao){
             if(prom.getNomeProduto().equals(novoProduto.getNome())){
                 custo=quantidade*novoProduto.getPrecoUnitario();
                 if(prom.getAtiva()==1){
@@ -143,13 +108,8 @@ public class SuperMercado {
         Scanner scDados = new Scanner(System.in);
         System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
         if (scDados.hasNext()) simNao = scDados.nextLine();
-            System.out.println(simNao);
-        if(simNao.equals("nao"))aux2=1;
-         
+        if(simNao.equals("nao"))aux2=1; 
         }
-        
-        
-        
         System.out.println("O preço é " + custo + " euros");
         Compra novaCompra = new Compra(custo, produtos);
         return novaCompra;
@@ -162,7 +122,7 @@ public class SuperMercado {
         System.out.println("Que produto deseja adicionar ao carrinho?");
         if (scDados.hasNext()) {
             produtoNome=scDados.nextLine();
-            for (Produto p : produtosEmStock) {
+            for (Produto p : produtos) {
                 if (p.getNome().equals(produtoNome)) {
                     return p;
                 } else i++;
@@ -174,7 +134,6 @@ public class SuperMercado {
         } else {
             pedeProduto(produtos);
         }
-        ArrayList<Promoçao> promoçoes = new ArrayList<>();
         Produto erro = new Produto(0, " ", 0.0, 0);
         return erro;
     }
@@ -186,6 +145,10 @@ public class SuperMercado {
         if (scDados.hasNext()) {
             quantidade = scDados.nextInt();
             if (produto.getStock() >= quantidade) {
+                produto.setStock(produto.getStock() - quantidade);
+                if(produto.getStock()==0){
+                    produtos.remove(produto);
+                }
                 return quantidade;
             } else {
                 System.out.println("Não há a quantidade desejada disponível em sotck. Por favor, introduza outro valor");
@@ -196,28 +159,35 @@ public class SuperMercado {
         pedeQuantidade(produto);
         return quantidade;
     }
-
-    public boolean atualizaBaseDados(Compra compra, String email, File ftexto) {
-        List<BaseDados> bd = new ArrayList<>();
-        bd = readFichClients(ftexto);
-        for (BaseDados c : bd) {
+/*Estas duas funções ainda não estão totalmente corretas;
+    
+    
+    */
+    /*public boolean atualizaBaseDados(Compra compra, String email) {
+        for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
-                c.getCompras().add(compra);
+                c.addCompras(compra);
                 return true;
             }
         }
         return false;
     }
-
+    public void consultaCompra(String email){
+        for (BaseDados c : clientes) {
+            if (c.getCliente().getEmail().equals(email)) {
+                System.out.println(c);
+            }
+    }
+    }*/
+    public void UpdateFich(){
+        
+    }
     public static void main(String[] args) {
         SuperMercado bomDia = new SuperMercado();
-        File fclientes = new File("ClientesText.txt");
-        File fproducts = new File("ProdutosText.txt");
-        File fpromoçoes = new File("Promotext.txt");
         Data hoje=new Data(5,12,2021);
-        bomDia.menu(fproducts, fclientes, fpromoçoes,hoje);
         bomDia.ficheiros(hoje);
-        bomDia.login(fclientes);
+        bomDia.menu(hoje);
+        bomDia.login();
 
     }
 
@@ -259,8 +229,8 @@ public class SuperMercado {
         return clientes;
     }
 
-    public ArrayList<Promoçao> readFichProm(File f, Data hoje) {
-        ArrayList<Promoçao> prom;
+    public ArrayList<Promocao> readFichProm(File f, Data hoje) {
+        ArrayList<Promocao> prom;
         prom = new ArrayList<>();
         if (f.exists() && f.isFile()) {
             try {
@@ -325,7 +295,7 @@ public class SuperMercado {
                         ProdutoLimpeza limpeza = new ProdutoLimpeza(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]));
                         product.add(limpeza);
                     } else if (arr[0].equals("MOB") && arr.length == 7) {
-                        Mobiliario mobiliario = new Mobiliario(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
+                        ProdutoMobiliario mobiliario = new ProdutoMobiliario(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
                         product.add(mobiliario);
                     } else if (arr[0].equals("ALI") && arr.length == 7) {
                         ProdutoAlimentar alimento = new ProdutoAlimentar(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
@@ -361,7 +331,7 @@ public class SuperMercado {
     }
 
     public void makeFichPromocao(File ftext, File fobj, Data hoje) {
-        ArrayList<Promoçao> list = readFichProm(ftext,hoje);
+        ArrayList<Promocao> list = readFichProm(ftext,hoje);
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -390,12 +360,12 @@ public class SuperMercado {
         }
     }
 
-    public void leFicheiroPromocao(ArrayList<Promoçao> listaPromocao, File fobj) {
+    public void leFicheiroPromocao(ArrayList<Promocao> listaPromocao, File fobj) {
         try {
             FileInputStream fis = new FileInputStream(fobj);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<Promoçao> x = (ArrayList<Promoçao>) ois.readObject();
-            for (Promoçao a : x) {
+            ArrayList<Promocao> x = (ArrayList<Promocao>) ois.readObject();
+            for (Promocao a : x) {
                 listaPromocao.add(a);
             }
             ois.close();
@@ -455,7 +425,7 @@ public class SuperMercado {
         File fObjClients = new File("Clientes.obj");
         File fObjProducts = new File("Produtos.obj");
 
-        if (!fObjProm.exists() && !fObjClients.exists() && !fObjProducts.exists()) {
+        if (!fObjProm.exists()||!fObjClients.exists() || !fObjProducts.exists()) {
             makeFichClients(fclientes, fObjClients);
             makeFichPromocao(fprom, fObjProm, hoje);
             makeFichProducts(fproducts, fObjProducts);
@@ -464,19 +434,20 @@ public class SuperMercado {
             leFicheiroPromocao(promocao, fObjProm);
             leFicheiroProducts(produtos, fObjProducts);
         }
-        for (BaseDados c : clientes) {
+        /*for (BaseDados c : clientes) {
             System.out.println(c + "\n");
 
         }
         System.out.println("\n\n");
 
-        for (Promoçao x : promocao) {
+        for (Promocao x : promocao) {
             System.out.println(x + "\n");
         }
         System.out.println("\n\n");
         for (Produto y : produtos) {
             System.out.println(y + "\n");
 
-        }
+        }*/
     }
 }
+
