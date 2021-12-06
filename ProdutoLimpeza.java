@@ -18,7 +18,7 @@ public class ProdutoLimpeza extends Produto {
     
     @Override
     public String toString(){
-        return " ";
+        return "Nome: "+getNome()+"  Preço Unitario: "+getPrecoUnitario()+"  Stock existente: "+getStock();
     }
     
     
