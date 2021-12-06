@@ -1,11 +1,13 @@
 package supermercado;
 
-public class Cliente {
+import java.io.Serializable;
+
+public class Cliente implements Serializable {
     private String nome;
     private String morada;
     private String email;
     private int telefone;
-    String dataNascimento;
+    private String dataNascimento;
     private int regularidade;
     
     public Cliente(){
@@ -70,7 +72,9 @@ public class Cliente {
     
     @Override
     public String toString(){
-        return " ";
+        return "Nome: "+getNome();
     }
     
+}
+
 }
