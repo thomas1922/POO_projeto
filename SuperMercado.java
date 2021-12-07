@@ -16,7 +16,7 @@ public class SuperMercado {
 
     private ArrayList<BaseDados> clientes;
     private ArrayList<Produto> produtos;
-    private ArrayList<Promoçao> promocao;
+    private ArrayList<Promocao> promocao;
 
     public SuperMercado() {
         clientes = new ArrayList<>();
@@ -104,7 +104,7 @@ public class SuperMercado {
             quantidade=pedeQuantidade(novoProduto);
             
         
-        for(Promoçao prom: promocao){
+        for(Promocao prom: promocao){
             if(prom.getNomeProduto().equals(novoProduto.getNome())){
                 custo=quantidade*novoProduto.getPrecoUnitario();
                 if(prom.getAtiva()==1){
@@ -147,7 +147,7 @@ public class SuperMercado {
         } else {
             pedeProduto(produtos);
         }
-        Produto erro = new Mobiliario(0, " ", 0.0, 0,0,0);
+        Produto erro = new ProdutoMobiliario(0, " ", 0.0, 0,0,0);
         return erro;
     }
 
@@ -176,10 +176,11 @@ public class SuperMercado {
     public double custoTransporte(Cliente cliente,double preçoCompra){
         int regularidade=cliente.getRegularidade();
         double custoTransporte;
-        
         if(regularidade==1){
-            if(preçoCompra>40.0)custoTransporte=0.0;
-            custoTransporte=15.0;    
+            if(preçoCompra>40.0){
+                custoTransporte=0.0;
+            }
+            else{custoTransporte=15.0;} 
         }
         else custoTransporte=20.0;
         
@@ -260,8 +261,8 @@ public class SuperMercado {
         return clientes;
     }
 
-    public ArrayList<Promoçao> readFichProm(File f, Data hoje) {
-        ArrayList<Promoçao> prom;
+    public ArrayList<Promocao> readFichProm(File f, Data hoje) {
+        ArrayList<Promocao> prom;
         prom = new ArrayList<>();
         if (f.exists() && f.isFile()) {
             try {
@@ -326,7 +327,7 @@ public class SuperMercado {
                         ProdutoLimpeza limpeza = new ProdutoLimpeza(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]));
                         product.add(limpeza);
                     } else if (arr[0].equals("MOB") && arr.length == 7) {
-                        Mobiliario mobiliario = new Mobiliario(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
+                        ProdutoMobiliario mobiliario = new ProdutoMobiliario(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
                         product.add(mobiliario);
                     } else if (arr[0].equals("ALI") && arr.length == 7) {
                         ProdutoAlimentar alimento = new ProdutoAlimentar(Integer.parseInt(arr[1]), arr[2], Double.parseDouble(arr[3]), Integer.parseInt(arr[4]), Integer.parseInt(arr[5]), Integer.parseInt(arr[6]));
@@ -362,7 +363,7 @@ public class SuperMercado {
     }
 
     public void makeFichPromocao(File ftext, File fobj, Data hoje) {
-        ArrayList<Promoçao> list = readFichProm(ftext,hoje);
+        ArrayList<Promocao> list = readFichProm(ftext,hoje);
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -391,12 +392,12 @@ public class SuperMercado {
         }
     }
 
-    public void leFicheiroPromocao(ArrayList<Promoçao> listaPromocao, File fobj) {
+    public void leFicheiroPromocao(ArrayList<Promocao> listaPromocao, File fobj) {
         try {
             FileInputStream fis = new FileInputStream(fobj);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<Promoçao> x = (ArrayList<Promoçao>) ois.readObject();
-            for (Promoçao a : x) {
+            ArrayList<Promocao> x = (ArrayList<Promocao>) ois.readObject();
+            for (Promocao a : x) {
                 listaPromocao.add(a);
             }
             ois.close();
