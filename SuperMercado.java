@@ -26,28 +26,20 @@ public class SuperMercado {
     
     public static void main(String[] args) {
         SuperMercado bomDia = new SuperMercado();
-        Data hoje=new Data(5,12,2021);
-        bomDia.ficheiros(hoje);
-        bomDia.menu(hoje);
-        bomDia.login();
+        bomDia.menu();
 
     }
    
 
     public String login(){
         Boolean correct = false;
-        String nova = "",auxiliar[]={};
-        int aux=0;
+        String nova = "";
         do{
             Scanner scDados = new Scanner(System.in);
             System.out.println("Insira o seu email");
-            if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
-        }
-        while(auxiliar[aux].isBlank()){
-            aux++;
-        }
-        nova=auxiliar[aux];
+            if (scDados.hasNext()) {
+                 if (scDados.hasNext()) {
+                    nova = scDados.nextLine();}}
             for(BaseDados c: clientes){
                 if(nova.equals(c.getCliente().getEmail())){
                 correct = true;
@@ -55,6 +47,7 @@ public class SuperMercado {
             }
             if(correct == false){
                 System.out.println("O email não existe ou está errado");
+                System.out.println("Tente outra vez");
                 System.out.println("----------------------------------\n");
             }
            
@@ -62,16 +55,23 @@ public class SuperMercado {
         return nova;
     }
 
-    public void menu(Data hoje) {
+    public void menu() {
+        Data hoje= new Data(5,12,2021);
+        ficheiros(hoje);
+        ficheiroPromocao(hoje);
         int escolha = 0;
         String email = login();
         Cliente cliente = cliente(email);
         
         do {
+            System.out.println("\n------------------------------");
+            System.out.println("Bem Vindo     Data: "+hoje+"\n");
             System.out.println("1-efetuar compra");
             System.out.println("2-Consultas compras efetuadas");
-            System.out.println("3-Mudar");
-            System.out.println("4-logout");
+            System.out.println("3-Mudar data");
+            System.out.println("4-Promoções");
+            System.out.println("5-Sair");
+             System.out.println("------------------------------\n");
             Scanner scDados = new Scanner(System.in);
             if (scDados.hasNextInt()) {
                 escolha = scDados.nextInt();
@@ -85,17 +85,58 @@ public class SuperMercado {
                     Compra compra = compra(hoje,cliente);
                     atualizaBaseDados(compra, email);
                 }
-                case 2 -> consultaCompra(email);
+                case 2 -> consultaCompra(email,hoje);
+                
                 case 3 -> {
-                    
+                    hoje = changeData(hoje);
+                    for(int i=0;i<promocao.size();i++){
+                        promocao.remove(i); }
+                    updateFichPromocao(hoje);
                 }
                 case 4 -> {
-                    UpdateFich();
+                     mostraPromo();
+                
+            }  case 5->{
+                    updateFich();
                     System.exit(0);
-            }}
-
-        } while (escolha != 4);
+            }
+        } 
+    }while (escolha != 5);
+        }
+    public Data novaData(){
+        int dia,mes,ano;
+        Data nova;
+        System.out.println("Insira o dia: ");
+        dia = scannerDatas();
+        System.out.println("Insira o mes ");
+        mes = scannerDatas();
+        System.out.println("Insira o ano ");
+        ano = scannerDatas();
+        nova = new Data(dia,mes,ano);
+        return nova;
     }
+    public int scannerDatas(){
+         int valor = 1;
+         Scanner scDados = new Scanner(System.in);
+         if (scDados.hasNextInt()) {
+                valor = scDados.nextInt();
+            }
+         else{
+             scannerDatas();
+         }
+         return valor;
+    }
+    public Data changeData(Data dataHoje){
+        Data nova = novaData();
+        if(nova.verificaData(nova, dataHoje)==1){
+            System.out.println("Não pode voltar atrás no tempo");
+            Data nova2 = changeData(dataHoje);
+        return nova2;}
+
+        return nova;
+    }
+
+   
     public Cliente cliente(String email){
         Cliente cliente=new Cliente();
         for(BaseDados bd: clientes){
@@ -108,27 +149,31 @@ public class SuperMercado {
 
     public Compra compra( Data hoje, Cliente cliente) {
         ArrayList<Produto> produtosComprados = new ArrayList<>();
+         System.out.println("*****************************");
         for(Produto p:produtos){
             System.out.println(p.getNome()+ "  Preço: "+p.getPrecoUnitario()+ " Stock: "+p.getStock());
         }
-        int quantidade = 0, i=0,aux=0,aux2=0;
+        System.out.println("******************************\n");
+        int quantidade = 0, i=0,aux=0;
         double custo=0.0;
         double custoTotal;
         double precoTransporte = 0.0;
         double custoExtra = 0.0;
-        String simNao="",auxiliar[]={};
+        String simNao="";
         while(aux==0){
             i=0;
             Produto novoProduto = pedeProduto(produtos);
             quantidade=pedeQuantidade(novoProduto);
             
-            System.out.println(novoProduto);
-            System.out.println(quantidade);
-            
-            produtosComprados.add(novoProduto);
-            
-            
-            
+              if (produtosComprados.isEmpty()){
+                  produtosComprados.add(novoProduto);
+            }
+            else{
+                if(!produtosComprados.contains(novoProduto)){
+                    produtosComprados.add(novoProduto);
+                }
+              }
+
         for(Promocao prom: promocao){
             if(prom.getNomeProduto().equals(novoProduto.getNome())){
                 if(prom.getAtiva()==1){
@@ -138,49 +183,39 @@ public class SuperMercado {
                 }
             }
         }
-           
+        
 	if(i==0)custo+=quantidade*novoProduto.getPrecoUnitario();
-        custoExtra+= custoExtraMobiliario(novoProduto, quantidade);
-        custo+=custoExtra;
+        custoExtra+= custoExtraMobiliario(novoProduto,quantidade);
         Scanner scDados = new Scanner(System.in);
         System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
-        if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
-        }
-        while(auxiliar[aux2].isBlank()){
-            aux2++;
-        }
-        simNao=auxiliar[aux2];
+        System.out.println("Sim - digite sim");
+        System.out.println("Não - digite 'nao'\n");
+        if (scDados.hasNext()) simNao = scDados.nextLine();
         if(simNao.equals("nao"))aux=1; 
         }
         
+        
         precoTransporte += custoTransporte(cliente, custo);
+        precoTransporte += custoExtra;
         System.out.println("O preço é " + custo + " euros");
         System.out.println("O custo do transporte é " + precoTransporte+ " euros");
         custoTotal = custo + precoTransporte;
         Compra novaCompra = new Compra(custoTotal,produtosComprados,hoje);
         return novaCompra;
     }
-
     public Produto pedeProduto(ArrayList<Produto> produtosEmStock) {
         String nomeProduto=" ";
 
-        String auxiliar[]={}; 
-        
-        int i=0,aux=0;
+        int i=0;
 
         Produto produto= new Produto();
+        Produto produtoAux = new Produto();
 
         System.out.println("Que produto deseja comprar?");
         Scanner scDados = new Scanner(System.in);
         if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
+            nomeProduto=scDados.nextLine();
         }
-        while(auxiliar[aux].isBlank()){
-            aux++;
-        }
-        nomeProduto=auxiliar[aux];
-                
 
         for(Produto p: produtosEmStock){
             if(p.getNome().equals(nomeProduto)){
@@ -193,13 +228,15 @@ public class SuperMercado {
 
         if(i==produtosEmStock.size()){
             System.out.println("O produto que deseja não se encontra disponível em stock");
-            pedeProduto(produtosEmStock);
+            produtoAux=pedeProduto(produtosEmStock);
+            return produtoAux;
         }
 
         return produto;
     }
     public int pedeQuantidade(Produto produto) {
         int quantidade = 0, stock;
+        int quantidadeAux = 0;
         Scanner scDados = new Scanner(System.in);
         System.out.println("Qual a quantidade que deseja?");
         if (scDados.hasNext()) {
@@ -207,7 +244,8 @@ public class SuperMercado {
         }
         if(produto.getStock()<quantidade){
             System.out.println("Não há a quantidade disponível em stock");
-            pedeQuantidade(produto);
+            quantidadeAux = pedeQuantidade(produto);
+            return quantidadeAux;
         }
         else{
             stock=produto.getStock()-quantidade;
@@ -221,12 +259,12 @@ public class SuperMercado {
 
 
    
-    public double custoExtraMobiliario(Produto produto, int quantidade){
+    public double custoExtraMobiliario(Produto produto,int quantidade){
         double custoExtra = 0;
         try{
         ProdutoMobiliario mob = (ProdutoMobiliario)produto;
         if(mob.getPeso()>15){
-            custoExtra = 10.0*quantidade;
+            custoExtra = quantidade * 10.0;
         }
         else{
             return 0;
@@ -260,15 +298,29 @@ public class SuperMercado {
         }
         return false;
     }
-    
-    public void consultaCompra(String email){
+    public void consultaCompra(String email,Data dataHoje){
         for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
-                System.out.println(c.getCompras()+"\n");
+                ArrayList<Compra> compras = c.getCompras();
+                for(Compra d: compras){
+                    Data x = d.getData();
+                    if(x.verificaData(dataHoje,x)==0){
+                        System.out.println(d);  
+                    }
+                }
             }
     }
     }
-    public void UpdateFichClients(ArrayList<BaseDados> clientes, File fobj) {
+    public void mostraPromo(){
+        System.out.println("----------Promoções----------");
+        for(Promocao p: promocao){
+            if(p.getAtiva() == 1){
+                System.out.println(p);
+            }
+        }
+    }
+    
+    public void updateFichClients(ArrayList<BaseDados> clientes, File fobj) {
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -281,8 +333,7 @@ public class SuperMercado {
             System.out.println("Erro a escrever para o ficheiro.");
         }
     }
-
-    public void UpdateFichProducts(ArrayList<Produto> produtos, File fobj) {
+    public void updateFichProducts(ArrayList<Produto> produtos, File fobj) {
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -295,12 +346,19 @@ public class SuperMercado {
             System.out.println("Erro a escrever para o ficheiro.");
         }
     }
-
-    public void UpdateFich(){
+  
+    
+    public void updateFichPromocao(Data hoje) {
+        File fprom = new File("PromoText.txt");
+        File fObjProm = new File("Promocoes.obj");
+        makeFichPromocao(fprom,fObjProm,hoje);
+        leFicheiroPromocao(promocao,fObjProm);
+    }
+    public void updateFich(){
         File fObjClients = new File("Clientes.obj");
         File fObjProducts = new File("Produtos.obj");
-        UpdateFichProducts(produtos,fObjProducts);
-        UpdateFichClients(clientes,fObjClients);
+        updateFichProducts(produtos,fObjProducts);
+        updateFichClients(clientes,fObjClients);
         
     }
     
@@ -530,25 +588,30 @@ public class SuperMercado {
             System.out.println("Erro a converter objeto.");
         }
     }
-
+    public void ficheiroPromocao(Data hoje){
+            File fprom = new File("PromoText.txt");
+            File fObjProm = new File("Promocoes.obj");
+            makeFichPromocao(fprom,fObjProm,hoje);
+            leFicheiroPromocao(promocao,fObjProm);
+    }
     public void ficheiros(Data hoje) {
         File fclientes = new File("ClientesText.txt");
-        File fprom = new File("PromoText.txt");
+        /*File fprom = new File("PromoText.txt");*/
         File fproducts = new File("ProdutosText.txt");
-        File fObjProm = new File("Promocoes.obj");
+        /*File fObjProm = new File("Promocoes.obj");*/
         File fObjClients = new File("Clientes.obj");
         File fObjProducts = new File("Produtos.obj");
 
-        if (!fObjProm.exists()||!fObjClients.exists() || !fObjProducts.exists()) {
+        if (!fObjProducts.exists()||!fObjClients.exists()) {
             makeFichClients(fclientes, fObjClients);
-            makeFichPromocao(fprom, fObjProm, hoje);
+            /*makeFichPromocao(fprom, fObjProm, hoje);*/
             makeFichProducts(fproducts, fObjProducts);
             leFicheiroClients(clientes, fObjClients);
-            leFicheiroPromocao(promocao, fObjProm);
+            /*leFicheiroPromocao(promocao, fObjProm);*/
             leFicheiroProducts(produtos, fObjProducts);
         } else {
             leFicheiroClients(clientes, fObjClients);
-            leFicheiroPromocao(promocao, fObjProm);
+            /*leFicheiroPromocao(promocao, fObjProm);*/
             leFicheiroProducts(produtos, fObjProducts);
         }
     }
