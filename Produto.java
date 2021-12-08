@@ -8,13 +8,18 @@ public class  Produto implements Serializable {
    private Double precoUnitario;
    private int stock;
    
+     
      public Produto(int identificador, String nome, Double precoUnitario, int stock) {
         this.identificador = identificador;
         this.nome = nome;
         this.precoUnitario = precoUnitario;
         this.stock = stock;
     }
-
+     
+    public Produto(){
+        
+    }
+   
     public int getIdentificador() {
         return identificador;
     }
@@ -46,6 +51,7 @@ public class  Produto implements Serializable {
     public void setStock(int stock) {
         this.stock = stock;
     }
+  
    @Override
   public String toString(){
       return getNome()+" ";
