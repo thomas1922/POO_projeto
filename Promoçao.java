@@ -1,16 +1,18 @@
 package supermercado;
 
-public abstract class Promoçao {
+import java.io.Serializable;
+
+public abstract class Promocao implements Serializable {
     private String nomeProduto;
     private Data dataInicio;
     private Data dataFim;
     private int ativa;
 
-    public Promoçao(String nomeProduto,Data dataInicio, Data dataFim, Data dataHoje) {
+    public Promocao(String nomeProduto,Data dataInicio, Data dataFim, Data dataHoje) {
         this.nomeProduto=nomeProduto;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
-        this.ativa=ativaPromoçao(dataHoje);
+        this.ativa=ativaPromocao(dataHoje);
     }
     
     public Data getDataInicio() {
@@ -48,10 +50,10 @@ public abstract class Promoçao {
     
     public abstract Double promoçao(int quantidade, Double preçoUnitario);
     
-    public int ativaPromoçao(Data dataHoje){
-        int ativador=0;
+    public int ativaPromocao(Data dataHoje){
+        int ativador;
         Data data = new Data();
-        ativador=data.comparaDatas(dataInicio, dataFim, dataHoje);
+        ativador= data.comparaDatas(dataInicio, dataFim, dataHoje);
         return ativador;
     }
     
