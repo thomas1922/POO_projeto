@@ -1,4 +1,3 @@
-
 package supermercado;
 
 import java.io.Serializable;
@@ -35,3 +34,4 @@ public class BaseDados implements Serializable {
         return "Dias" +getCompras();
     }
 }
+
