@@ -24,6 +24,14 @@ public class SuperMercado {
         promocao = new ArrayList<>();
     }
     
+    public static void main(String[] args) {
+        SuperMercado bomDia = new SuperMercado();
+        Data hoje=new Data(5,12,2021);
+        bomDia.ficheiros(hoje);
+        bomDia.menu(hoje);
+        bomDia.login();
+
+    }
    
 
     public String login(){
@@ -57,13 +65,16 @@ public class SuperMercado {
         do {
             System.out.println("1-efetuar compra");
             System.out.println("2-Consultas compras efetuadas");
-            System.out.println("3-Mudar dia");
+            System.out.println("3-Mudar");
             System.out.println("4-logout");
             Scanner scDados = new Scanner(System.in);
             if (scDados.hasNextInt()) {
                 escolha = scDados.nextInt();
             }
-
+            else{
+                System.out.println("erro");
+                escolha = 0;
+            }
             switch (escolha) {
                 case 1 -> {
                     Compra compra = compra(hoje,cliente);
@@ -71,14 +82,15 @@ public class SuperMercado {
                 }
                 case 2 -> consultaCompra(email);
                 case 3 -> {
-                    ;
+                    
                 }
-                case 4 -> System.exit(0);
-            }
+                case 4 -> {
+                    UpdateFich();
+                    System.exit(0);
+            }}
 
         } while (escolha != 4);
     }
-    
     public Cliente cliente(String email){
         Cliente cliente=new Cliente();
         for(BaseDados bd: clientes){
@@ -90,89 +102,127 @@ public class SuperMercado {
     }
 
     public Compra compra( Data hoje, Cliente cliente) {
-       
+        ArrayList<Produto> produtosComprados = new ArrayList<>();
         for(Produto p:produtos){
-            System.out.println(p);
+            System.out.println(p.getNome()+ "  Preço: "+p.getPrecoUnitario()+ " Stock: "+p.getStock());
         }
-        
-        int quantidade = 0, i =0,aux=0, aux2=0;
+        int quantidade = 0, i=0,aux=0;
         double custo=0.0;
+        double custoTotal;
+        double precoTransporte = 0.0;
+        double custoExtra = 0.0;
         String simNao="";
-        
-        while(aux2==0){
+        while(aux==0){
+            i=0;
             Produto novoProduto = pedeProduto(produtos);
             quantidade=pedeQuantidade(novoProduto);
             
-        
+            if (produtosComprados.isEmpty()){
+                  produtosComprados.add(novoProduto);
+            }
+            else{
+                for(Produto pro: produtosComprados){
+                if(!(pro.getNome().equals(novoProduto.getNome()))){
+                    produtosComprados.add(novoProduto);
+                }
+            }
+            }
+            
+          
         for(Promocao prom: promocao){
             if(prom.getNomeProduto().equals(novoProduto.getNome())){
-                custo=quantidade*novoProduto.getPrecoUnitario();
                 if(prom.getAtiva()==1){
+                    custo+=quantidade*novoProduto.getPrecoUnitario();
                     custo-=prom.promoçao(quantidade, novoProduto.getPrecoUnitario());
                     i++;
                 }
             }
         }
-        if(i==0)custo+=quantidade*novoProduto.getPrecoUnitario();
-        if(novoProduto.tipo()==1){
-            custo+=10.0;
-        }
+	if(i==0)custo+=quantidade*novoProduto.getPrecoUnitario();
+        custoExtra+= custoExtraMobiliario(novoProduto);
+        custo+=custoExtra;
         Scanner scDados = new Scanner(System.in);
         System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
         if (scDados.hasNext()) simNao = scDados.nextLine();
-        if(simNao.equals("nao"))aux2=1; 
+        if(simNao.equals("nao"))aux=1; 
         }
-        custo+=custoTransporte(cliente, custo);
+        
+        precoTransporte += custoTransporte(cliente, custo);
         System.out.println("O preço é " + custo + " euros");
-        Compra novaCompra = new Compra(custo, produtos);
+        System.out.println("O custo do transporte é " + precoTransporte+ " euros");
+        custoTotal = custo + precoTransporte;
+        Compra novaCompra = new Compra(custoTotal,produtosComprados,hoje);
         return novaCompra;
     }
 
     public Produto pedeProduto(ArrayList<Produto> produtosEmStock) {
-        int i=0;
-        String produtoNome = "";
-        Scanner scDados = new Scanner(System.in);
-        System.out.println("Que produto deseja adicionar ao carrinho?");
-        if (scDados.hasNext()) {
-            produtoNome=scDados.nextLine();
-            for (Produto p : produtos) {
-                if (p.getNome().equals(produtoNome)) {
-                    return p;
-                } else i++;
-            }
-            if(i==produtosEmStock.size()){
-                System.out.println("O produto que indicou não se encontra disponível de momento");
-                pedeProduto(produtos);
-            }
-        } else {
-            pedeProduto(produtos);
-        }
-        Produto erro = new ProdutoMobiliario(0, " ", 0.0, 0,0,0);
-        return erro;
-    }
+        String nomeProduto=" ";
 
+        int i=0;
+
+        Produto produto= new Produto();
+
+        System.out.println("Que produto deseja comprar?");
+        Scanner scDados = new Scanner(System.in);
+        if(scDados.hasNext()){
+            nomeProduto=scDados.nextLine();
+        }
+
+        for(Produto p: produtosEmStock){
+            if(p.getNome().equals(nomeProduto)){
+                produto=p;
+            }
+            else{
+                i++;
+            }
+        }
+
+        if(i==produtosEmStock.size()){
+            System.out.println("O produto que deseja não se encontra disponível em stock");
+            pedeProduto(produtosEmStock);
+        }
+
+        return produto;
+    }
     public int pedeQuantidade(Produto produto) {
-        int quantidade = 0;
+        int quantidade = 0, stock;
         Scanner scDados = new Scanner(System.in);
         System.out.println("Qual a quantidade que deseja?");
         if (scDados.hasNext()) {
             quantidade = scDados.nextInt();
-            if (produto.getStock() >= quantidade) {
-                produto.setStock(produto.getStock() - quantidade);
-                if(produto.getStock()==0){
-                    produtos.remove(produto);
-                }
-                return quantidade;
-            } else {
-                System.out.println("Não há a quantidade desejada disponível em sotck. Por favor, introduza outro valor");
-                pedeQuantidade(produto);
+        }
+        if(produto.getStock()<quantidade){
+            System.out.println("Não há a quantidade disponível em stock");
+            pedeQuantidade(produto);
+        }
+        else{
+            stock=produto.getStock()-quantidade;
+            produto.setStock(stock);
+            if(produto.getStock()==0){
+                produtos.remove(produto);
             }
         }
-        System.out.println("Introduza outro valor");
-        pedeQuantidade(produto);
         return quantidade;
     }
-    
+
+
+   
+    public double custoExtraMobiliario(Produto produto){
+        double custoExtra = 0;
+        try{
+        ProdutoMobiliario mob = (ProdutoMobiliario)produto;
+        if(mob.getPeso()>15){
+            custoExtra = 10.0;
+        }
+        else{
+            return 0;
+        }
+        }catch(ClassCastException x){
+                return 0.0;
+        }
+            
+       return custoExtra; 
+    }
     public double custoTransporte(Cliente cliente,double preçoCompra){
         int regularidade=cliente.getRegularidade();
         double custoTransporte;
@@ -187,12 +237,6 @@ public class SuperMercado {
         return custoTransporte;
     }
     
-    
-    
-/*Estas duas funções ainda não estão totalmente corretas;
-    
-    
-    */
     public boolean atualizaBaseDados(Compra compra, String email) {
         for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
@@ -202,27 +246,50 @@ public class SuperMercado {
         }
         return false;
     }
+    
     public void consultaCompra(String email){
         for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
-                c.getCompras().forEach(compra -> {
-                    System.out.println(compra);
-                });
+                System.out.println(c.getCompras()+"\n");
             }
     }
     }
+    public void UpdateFichClients(ArrayList<BaseDados> clientes, File fobj) {
+        try {
+            FileOutputStream fos = new FileOutputStream(fobj);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(clientes);
+            oos.close();
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("Erro a criar ficheiro.");
+        } catch (IOException ex) {
+            System.out.println("Erro a escrever para o ficheiro.");
+        }
+    }
+
+    public void UpdateFichProducts(ArrayList<Produto> produtos, File fobj) {
+        try {
+            FileOutputStream fos = new FileOutputStream(fobj);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(produtos);
+            oos.close();
+            fos.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("Erro a criar ficheiro.");
+        } catch (IOException ex) {
+            System.out.println("Erro a escrever para o ficheiro.");
+        }
+    }
+
     public void UpdateFich(){
+        File fObjClients = new File("Clientes.obj");
+        File fObjProducts = new File("Produtos.obj");
+        UpdateFichProducts(produtos,fObjProducts);
+        UpdateFichClients(clientes,fObjClients);
         
     }
-    public static void main(String[] args) {
-        SuperMercado bomDia = new SuperMercado();
-        Data hoje=new Data(5,12,2021);
-        bomDia.ficheiros(hoje);
-        bomDia.menu(hoje);
-        bomDia.login();
-
-    }
-
+    
     public ArrayList<BaseDados> readFichClients(File f) {
         ArrayList<BaseDados> clientes;
         clientes = new ArrayList<>();
@@ -337,7 +404,7 @@ public class SuperMercado {
             } catch (NumberFormatException e) {
                 System.out.println("Erro ao criar objeto");
             } catch (FileNotFoundException ex) {
-                System.out.println("Erro ao abrir ficheiro************");
+                System.out.println("Erro ao abrir ficheiro");
             } catch (IOException ex) {
                 System.out.println("Erro a ler ficheiro de texto.");
             }
@@ -386,9 +453,9 @@ public class SuperMercado {
             oos.close();
             fos.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("Erro a criar ficheiro************.");
+            System.out.println("Erro a criar ficheiro.");
         } catch (IOException ex) {
-            System.out.println("Erro a escrever para o ficheiro---------------------.");
+            System.out.println("Erro a escrever para o ficheiro.");
         }
     }
 
@@ -444,7 +511,6 @@ public class SuperMercado {
         } catch (FileNotFoundException ex) {
             System.out.println("Erro a abrir ficheiro.");
         } catch (IOException ex) {
-            System.out.println("cccc");
             System.out.println("Erro a ler ficheiro.");
         } catch (ClassNotFoundException ex) {
             System.out.println("Erro a converter objeto.");
@@ -463,21 +529,13 @@ public class SuperMercado {
             makeFichClients(fclientes, fObjClients);
             makeFichPromocao(fprom, fObjProm, hoje);
             makeFichProducts(fproducts, fObjProducts);
+            leFicheiroClients(clientes, fObjClients);
+            leFicheiroPromocao(promocao, fObjProm);
+            leFicheiroProducts(produtos, fObjProducts);
         } else {
             leFicheiroClients(clientes, fObjClients);
             leFicheiroPromocao(promocao, fObjProm);
             leFicheiroProducts(produtos, fObjProducts);
         }
-        /*for (BaseDados c : clientes) {
-            System.out.println(c + "\n");
-        }
-        System.out.println("\n\n");
-        for (Promocao x : promocao) {
-            System.out.println(x + "\n");
-        }
-        System.out.println("\n\n");
-        for (Produto y : produtos) {
-            System.out.println(y + "\n");
-        }*/
     }
 }
