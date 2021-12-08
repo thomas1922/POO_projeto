@@ -1,6 +1,8 @@
 package supermercado;
 
-public class ProdutoMobiliario extends Produto {
+import java.io.Serializable;
+
+public class ProdutoMobiliario extends Produto implements Serializable{
     private int peso;
     private int dimensao;
     
@@ -28,6 +30,6 @@ public class ProdutoMobiliario extends Produto {
     
     @Override
     public String toString(){
-         return "Nome: "+getNome()+"  Preço Unitario: "+getPrecoUnitario()+"  Stock existente: "+getStock();
+        return getNome();
     }
 }
