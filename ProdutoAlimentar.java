@@ -1,6 +1,8 @@
 package supermercado;
 
-public class ProdutoAlimentar extends Produto{
+import java.io.Serializable;
+
+public class ProdutoAlimentar extends Produto implements Serializable{
     private int numCalorias;
     private int percentGordura;
     
@@ -25,10 +27,10 @@ public class ProdutoAlimentar extends Produto{
     public void setPercentGordura(int percentGordura) {
         this.percentGordura = percentGordura;
     }
-    
+
     @Override
     public String toString(){
-        return "Nome: "+getNome()+"  Preço Unitario: "+getPrecoUnitario()+"  Stock existente: "+getStock();
+        return getNome();
     }
     
 }
