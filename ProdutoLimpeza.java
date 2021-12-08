@@ -1,6 +1,8 @@
 package supermercado;
 
-public class ProdutoLimpeza extends Produto {
+import java.io.Serializable;
+
+public class ProdutoLimpeza extends Produto implements Serializable {
     private int grauToxicidade;
 
     public ProdutoLimpeza(int identificador, String nome, Double precoUnitario, int stock,int grauToxicidade) {
@@ -15,10 +17,10 @@ public class ProdutoLimpeza extends Produto {
     public void setGrauToxicidade(int grauToxicidade) {
         this.grauToxicidade = grauToxicidade;
     }
-    
+
     @Override
     public String toString(){
-        return "Nome: "+getNome()+"  Preço Unitario: "+getPrecoUnitario()+"  Stock existente: "+getStock();
+        return getNome();
     }
     
     
