@@ -1,13 +1,10 @@
-REG,Tomas,Rua dos Sapateiros,tomasdias@sapo.pt,962857592,12-4-2002
-NORM,Salvador,Rua de Angola,salvadorPinto@gmail.com,961694943,16-4-2023
-NORM,Coelho,Rua de Angola,salvadorAcosta@gmail.com,953555443,16-4-2023
-REG,Dias,Rua dos Sapateiros,tomasDasdores@sapo.pt,962857592,12-4-2002
-
-
-
-
-
-
-
-
-
+REG,Tomas,Rua dos Sapateiros,tomasdias@gmail.pt,962857592,12-4-2002
+REG,Rodrick,Rua dos Combatentes,rodrick_andrew@zohomail.com,960177014,06-02-1998
+REG,Kristy,Rua dos Descobrimentos,kristy_gibbons@gmail.com,931785279,29-05-2003
+REG,Mason,Rua de Angola,mason_randall@aol.com,928595888,02-03-1995
+REG,Fatima,Rua do Brasil,fatimah_hamilton@yandex.com,929993914,04-03-1992
+NORM,Salvador,Rua da Guine,salvadorCoelho@gmail.pt,965795663,01-05-2003
+NORM,Maya,Rua Moçambique,maya_little@hotmail.com,962701997,04-11-2000
+NORM,Greg,Rua do Prado,greg_sharma@zohomail.com,915105003,06-03-2001
+NORM,Micheal,Rua dos Olivais,micheal_young@mail.com,961261508,15-08-2000
+NORM,Alba,Rua das Aveleiras,alba_paul@outlook.com,926094319,25-10-1996
