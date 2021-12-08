@@ -36,13 +36,18 @@ public class SuperMercado {
 
     public String login(){
         Boolean correct = false;
-        String nova = "";
+        String nova = "",auxiliar[]={};
+        int aux=0;
         do{
             Scanner scDados = new Scanner(System.in);
             System.out.println("Insira o seu email");
-            if (scDados.hasNext()) {
-                 if (scDados.hasNext()) {
-                    nova = scDados.nextLine();}}
+            if(scDados.hasNext()){
+            auxiliar=scDados.nextLine().split("\s");
+        }
+        while(auxiliar[aux].isBlank()){
+            aux++;
+        }
+        nova=auxiliar[aux];
             for(BaseDados c: clientes){
                 if(nova.equals(c.getCliente().getEmail())){
                 correct = true;
@@ -106,29 +111,24 @@ public class SuperMercado {
         for(Produto p:produtos){
             System.out.println(p.getNome()+ "  Preço: "+p.getPrecoUnitario()+ " Stock: "+p.getStock());
         }
-        int quantidade = 0, i=0,aux=0;
+        int quantidade = 0, i=0,aux=0,aux2=0;
         double custo=0.0;
         double custoTotal;
         double precoTransporte = 0.0;
         double custoExtra = 0.0;
-        String simNao="";
+        String simNao="",auxiliar[]={};
         while(aux==0){
             i=0;
             Produto novoProduto = pedeProduto(produtos);
             quantidade=pedeQuantidade(novoProduto);
             
-            if (produtosComprados.isEmpty()){
-                  produtosComprados.add(novoProduto);
-            }
-            else{
-                for(Produto pro: produtosComprados){
-                if(!(pro.getNome().equals(novoProduto.getNome()))){
-                    produtosComprados.add(novoProduto);
-                }
-            }
-            }
+            System.out.println(novoProduto);
+            System.out.println(quantidade);
             
-          
+            produtosComprados.add(novoProduto);
+            
+            
+            
         for(Promocao prom: promocao){
             if(prom.getNomeProduto().equals(novoProduto.getNome())){
                 if(prom.getAtiva()==1){
@@ -138,12 +138,19 @@ public class SuperMercado {
                 }
             }
         }
+           
 	if(i==0)custo+=quantidade*novoProduto.getPrecoUnitario();
-        custoExtra+= custoExtraMobiliario(novoProduto);
+        custoExtra+= custoExtraMobiliario(novoProduto, quantidade);
         custo+=custoExtra;
         Scanner scDados = new Scanner(System.in);
         System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
-        if (scDados.hasNext()) simNao = scDados.nextLine();
+        if(scDados.hasNext()){
+            auxiliar=scDados.nextLine().split("\s");
+        }
+        while(auxiliar[aux2].isBlank()){
+            aux2++;
+        }
+        simNao=auxiliar[aux2];
         if(simNao.equals("nao"))aux=1; 
         }
         
@@ -158,15 +165,22 @@ public class SuperMercado {
     public Produto pedeProduto(ArrayList<Produto> produtosEmStock) {
         String nomeProduto=" ";
 
-        int i=0;
+        String auxiliar[]={}; 
+        
+        int i=0,aux=0;
 
         Produto produto= new Produto();
 
         System.out.println("Que produto deseja comprar?");
         Scanner scDados = new Scanner(System.in);
         if(scDados.hasNext()){
-            nomeProduto=scDados.nextLine();
+            auxiliar=scDados.nextLine().split("\s");
         }
+        while(auxiliar[aux].isBlank()){
+            aux++;
+        }
+        nomeProduto=auxiliar[aux];
+                
 
         for(Produto p: produtosEmStock){
             if(p.getNome().equals(nomeProduto)){
@@ -207,12 +221,12 @@ public class SuperMercado {
 
 
    
-    public double custoExtraMobiliario(Produto produto){
+    public double custoExtraMobiliario(Produto produto, int quantidade){
         double custoExtra = 0;
         try{
         ProdutoMobiliario mob = (ProdutoMobiliario)produto;
         if(mob.getPeso()>15){
-            custoExtra = 10.0;
+            custoExtra = 10.0*quantidade;
         }
         else{
             return 0;
