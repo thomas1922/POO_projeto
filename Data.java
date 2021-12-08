@@ -2,6 +2,7 @@ package supermercado;
 
 import java.io.Serializable;
 
+
 public class Data implements Serializable{
 
     private int dia;
@@ -46,10 +47,23 @@ public class Data implements Serializable{
             if (dataHoje.mes >= dataInicio.mes && dataHoje.mes <= dataFim.mes) {
                     if (dataHoje.dia >= dataInicio.dia&&dataHoje.dia <= dataFim.dia) {
                         return 1;}
+            }else{
+                return 0;
             }
         }
         return 0;
     }
+    public int verificaData(Data dataHoje,Data dataInicio){
+         if (dataHoje.ano <= dataInicio.ano ){
+             if (dataHoje.mes <= dataInicio.mes){
+                 if (dataHoje.dia < dataInicio.dia){
+                     return 1;
+                 }
+             }
+         }
+         return 0;
+    }
+    
     @Override
     public String toString(){
         return getDia()+"/"+getMes()+"/"+getAno();
