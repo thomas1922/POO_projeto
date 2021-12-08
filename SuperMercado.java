@@ -33,13 +33,18 @@ public class SuperMercado {
 
     public String login(){
         Boolean correct = false;
-        String nova = "";
+        String nova = "",auxiliar[]={};
+        int aux=0;
         do{
             Scanner scDados = new Scanner(System.in);
             System.out.println("Insira o seu email");
-            if (scDados.hasNext()) {
-                 if (scDados.hasNext()) {
-                    nova = scDados.nextLine();}}
+            if(scDados.hasNext()){
+            auxiliar=scDados.nextLine().split("\s");
+        }
+        while(auxiliar[aux].isBlank()){
+            aux++;
+        }
+        nova=auxiliar[aux];
             for(BaseDados c: clientes){
                 if(nova.equals(c.getCliente().getEmail())){
                 correct = true;
@@ -148,6 +153,8 @@ public class SuperMercado {
     }
 
     public Compra compra( Data hoje, Cliente cliente) {
+        String auxiliar[]={};
+        int aux2=0;
         ArrayList<Produto> produtosComprados = new ArrayList<>();
          System.out.println("*****************************");
         for(Produto p:produtos){
@@ -190,7 +197,13 @@ public class SuperMercado {
         System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
         System.out.println("Sim - digite sim");
         System.out.println("Não - digite 'nao'\n");
-        if (scDados.hasNext()) simNao = scDados.nextLine();
+        if(scDados.hasNext()){
+            auxiliar=scDados.nextLine().split("\s");
+        }
+        while(auxiliar[aux2].isBlank()){
+            aux2++;
+        }
+        simNao=auxiliar[aux2];
         if(simNao.equals("nao"))aux=1; 
         }
         
@@ -204,9 +217,9 @@ public class SuperMercado {
         return novaCompra;
     }
     public Produto pedeProduto(ArrayList<Produto> produtosEmStock) {
-        String nomeProduto=" ";
+        String nomeProduto=" ", auxiliar[]={};
 
-        int i=0;
+        int i=0,aux=0;
 
         Produto produto= new Produto();
         Produto produtoAux = new Produto();
@@ -214,8 +227,12 @@ public class SuperMercado {
         System.out.println("Que produto deseja comprar?");
         Scanner scDados = new Scanner(System.in);
         if(scDados.hasNext()){
-            nomeProduto=scDados.nextLine();
+            auxiliar=scDados.nextLine().split("\s");
         }
+        while(auxiliar[aux].isBlank()){
+            aux++;
+        }
+        nomeProduto=auxiliar[aux];
 
         for(Produto p: produtosEmStock){
             if(p.getNome().equals(nomeProduto)){
