@@ -3,9 +3,20 @@ package supermercado;
 import java.io.Serializable;
 
 public class ProdutoLimpeza extends Produto implements Serializable {
+
     private int grauToxicidade;
 
-    public ProdutoLimpeza(int identificador, String nome, Double precoUnitario, int stock,int grauToxicidade) {
+    /**
+     * method that calls the constructor of the super class, receiving its
+     * arguments, plus the degree of toxicity
+     *
+     * @param identificador Identifier
+     * @param nome Name
+     * @param precoUnitario Price
+     * @param stock Stock
+     * @param grauToxicidade degree of toxicity
+     */
+    public ProdutoLimpeza(int identificador, String nome, Double precoUnitario, int stock, int grauToxicidade) {
         super(identificador, nome, precoUnitario, stock);
         this.grauToxicidade = grauToxicidade;
     }
@@ -19,9 +30,8 @@ public class ProdutoLimpeza extends Produto implements Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getNome();
     }
-    
-    
+
 }
