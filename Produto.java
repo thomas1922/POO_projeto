@@ -13,8 +13,8 @@ public class Produto implements Serializable {
      * constructor which takes as parameters an identifier, a name, the price
      * and the existing stock
      *
-     * @param identificador Identifier
-     * @param nome Name
+     * @param identificador identifier
+     * @param nome name
      * @param precoUnitario price
      * @param stock stock
      */
