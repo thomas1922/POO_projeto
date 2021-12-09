@@ -11,10 +11,10 @@ public class ProdutoAlimentar extends Produto implements Serializable {
      * method that calls the constructor of the super class, receiving its
      * arguments, plus the number of calories and fat percentage
      *
-     * @param identificador Identifier
-     * @param nome Name
-     * @param precoUnitario Price
-     * @param stock Stock
+     * @param identificador identifier
+     * @param nome name
+     * @param precoUnitario price
+     * @param stock stock
      * @param numCalorias number of calories
      * @param percentGordura fat percentage
      */
