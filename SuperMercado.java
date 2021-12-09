@@ -23,234 +23,254 @@ public class SuperMercado {
         produtos = new ArrayList<>();
         promocao = new ArrayList<>();
     }
-    
+
     public static void main(String[] args) {
         SuperMercado bomDia = new SuperMercado();
         bomDia.menu();
 
     }
-   
 
-    public String login(){
+    /**
+     * method that asks the user to introduce an email and checks if it's valid,
+     * if it's valid it returns the user's email otherwise it asks the user's to
+     * introduce email again
+     *
+     * @return String
+     */
+    public String login() {
+        String nova = "", auxiliar[] = {};
+        int aux = 0;
         Boolean correct = false;
-        String nova = "",auxiliar[]={};
-        int aux=0;
-        do{
+
+        do {
             Scanner scDados = new Scanner(System.in);
             System.out.println("Insira o seu email");
-            if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
-        }
-        while(auxiliar[aux].isBlank()){
-            aux++;
-        }
-        nova=auxiliar[aux];
-            for(BaseDados c: clientes){
-                if(nova.equals(c.getCliente().getEmail())){
-                correct = true;
+            if (scDados.hasNext()) {
+                auxiliar = scDados.nextLine().split("\s");
             }
+            while (auxiliar[aux].isBlank()) {
+                aux++;
             }
-            if(correct == false){
+            nova = auxiliar[aux];
+            for (BaseDados c : clientes) {
+                if (nova.equals(c.getCliente().getEmail())) {
+                    correct = true;
+                }
+            }
+            if (correct == false) {
                 System.out.println("O email não existe ou está errado");
                 System.out.println("Tente outra vez");
                 System.out.println("----------------------------------\n");
             }
-           
-        }while(!correct);  
+
+        } while (!correct);
         return nova;
     }
 
+    /**
+     * Interface of the programme where you can login and perform all the
+     * operations of the programme, make a purchase, see the previous purchases,
+     * change the date, view the products in promotion and exit the programme
+     */
     public void menu() {
-        Data hoje= new Data(5,12,2021);
+        Data hoje = new Data(5, 12, 2021);
         ficheiros(hoje);
         ficheiroPromocao(hoje);
         int escolha = 0;
         String email = login();
         Cliente cliente = cliente(email);
-        
+
         do {
             System.out.println("\n------------------------------");
-            System.out.println("Bem Vindo     Data: "+hoje+"\n");
+            System.out.println("Bem Vindo     Data: " + hoje + "\n");
             System.out.println("1-efetuar compra");
             System.out.println("2-Consultas compras efetuadas");
             System.out.println("3-Mudar data");
             System.out.println("4-Promoções");
             System.out.println("5-Sair");
-             System.out.println("------------------------------\n");
+            System.out.println("------------------------------\n");
             Scanner scDados = new Scanner(System.in);
             if (scDados.hasNextInt()) {
                 escolha = scDados.nextInt();
-            }
-            else{
+            } else {
                 System.out.println("erro");
                 escolha = 0;
             }
             switch (escolha) {
                 case 1 -> {
-                    Compra compra = compra(hoje,cliente);
+                    Compra compra = compra(hoje, cliente);
                     atualizaBaseDados(compra, email);
                 }
-                case 2 -> consultaCompra(email,hoje);
-                
+                case 2 ->
+                    consultaCompra(email, hoje);
+
                 case 3 -> {
-                    hoje = changeData(hoje);
-                    for(int i=0;i<promocao.size();i++){
-                        promocao.remove(i); }
-                    updateFichPromocao(hoje);
+                    hoje = hoje.mudaData(hoje);
+                    atualizaPromocoes();
+                    ficheiroPromocao(hoje);
                 }
                 case 4 -> {
-                     mostraPromo();
-                
-            }  case 5->{
+                    mostraPromo();
+
+                }
+                case 5 -> {
                     updateFich();
                     System.exit(0);
+                }
             }
-        } 
-    }while (escolha != 5);
+        } while (escolha != 5);
+    }
+
+    /**
+     * method that remove the promotion of the arrayList
+     */
+    public void atualizaPromocoes() {
+        for (int i = 0; i < promocao.size(); i++) {
+            promocao.remove(i);
         }
-    public Data novaData(){
-        int dia,mes,ano;
-        Data nova;
-        System.out.println("Insira o dia: ");
-        dia = scannerDatas();
-        System.out.println("Insira o mes ");
-        mes = scannerDatas();
-        System.out.println("Insira o ano ");
-        ano = scannerDatas();
-        nova = new Data(dia,mes,ano);
-        return nova;
-    }
-    public int scannerDatas(){
-         int valor = 1;
-         Scanner scDados = new Scanner(System.in);
-         if (scDados.hasNextInt()) {
-                valor = scDados.nextInt();
-            }
-         else{
-             scannerDatas();
-         }
-         return valor;
-    }
-    public Data changeData(Data dataHoje){
-        Data nova = novaData();
-        if(nova.verificaData(nova, dataHoje)==1){
-            System.out.println("Não pode voltar atrás no tempo");
-            Data nova2 = changeData(dataHoje);
-        return nova2;}
-
-        return nova;
     }
 
-   
-    public Cliente cliente(String email){
-        Cliente cliente=new Cliente();
-        for(BaseDados bd: clientes){
-            if(bd.getCliente().getEmail().equals(email)){
-                cliente=bd.getCliente();
+    /**
+     * method that given an email, searches the list of clients, and returns the
+     * client that has the given email
+     *
+     * @param email email
+     * @return cliente
+     */
+    public Cliente cliente(String email) {
+        Cliente cliente = new Cliente();
+        for (BaseDados bd : clientes) {
+            if (bd.getCliente().getEmail().equals(email)) {
+                cliente = bd.getCliente();
             }
         }
         return cliente;
     }
 
-    public Compra compra( Data hoje, Cliente cliente) {
-        String auxiliar[]={};
-        int aux2=0;
+    /**
+     * method that, given as parameters the current date and a customer, shows
+     * the products available for purchase. The purchase is made by requesting
+     * the name of the product and the desired quantity, being possible to buy
+     * several products in a single purchase.At the end it returns a purchase,
+     * with the total price and the products bought
+     *
+     * @param hoje current date
+     * @param cliente cliente
+     * @return compra
+     */
+    public Compra compra(Data hoje, Cliente cliente) {
         ArrayList<Produto> produtosComprados = new ArrayList<>();
-         System.out.println("*****************************");
-        for(Produto p:produtos){
-            System.out.println(p.getNome()+ "  Preço: "+p.getPrecoUnitario()+ " Stock: "+p.getStock());
+        System.out.println("*****************************");
+        for (Produto p : produtos) {
+            System.out.println(p.getNome() + "  Preço: " + p.getPrecoUnitario() + " Stock: " + p.getStock());
         }
         System.out.println("******************************\n");
-        int quantidade = 0, i=0,aux=0;
-        double custo=0.0;
+        int quantidade = 0, i = 0, aux = 0;
+        double custo = 0.0;
         double custoTotal;
         double precoTransporte = 0.0;
         double custoExtra = 0.0;
-        String simNao="";
-        while(aux==0){
-            i=0;
+        String simNao = "";
+        while (aux == 0) {
+            i = 0;
             Produto novoProduto = pedeProduto(produtos);
-            quantidade=pedeQuantidade(novoProduto);
-            
-              if (produtosComprados.isEmpty()){
-                  produtosComprados.add(novoProduto);
-            }
-            else{
-                if(!produtosComprados.contains(novoProduto)){
+            quantidade = pedeQuantidade(novoProduto);
+
+            if (produtosComprados.isEmpty()) {
+                produtosComprados.add(novoProduto);
+            } else {
+                if (!produtosComprados.contains(novoProduto)) {
                     produtosComprados.add(novoProduto);
                 }
-              }
+            }
 
-        for(Promocao prom: promocao){
-            if(prom.getNomeProduto().equals(novoProduto.getNome())){
-                if(prom.getAtiva()==1){
-                    custo+=quantidade*novoProduto.getPrecoUnitario();
-                    custo-=prom.promoçao(quantidade, novoProduto.getPrecoUnitario());
-                    i++;
+            for (Promocao prom : promocao) {
+                if (prom.getNomeProduto().equals(novoProduto.getNome())) {
+                    if (prom.getAtiva() == 1) {
+                        custo += quantidade * novoProduto.getPrecoUnitario();
+                        custo -= prom.promocao(quantidade, novoProduto.getPrecoUnitario());
+                        i++;
+                    }
                 }
             }
+
+            if (i == 0) {
+                custo += quantidade * novoProduto.getPrecoUnitario();
+            }
+            custoExtra += custoExtraMobiliario(novoProduto, quantidade);
+            Scanner scDados = new Scanner(System.in);
+            System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
+            System.out.println("Sim - digite sim");
+            System.out.println("Não - digite 'nao'\n");
+            if (scDados.hasNext()) {
+                simNao = scDados.nextLine();
+            }
+            if (simNao.equals("nao")) {
+                aux = 1;
+            }
         }
-        
-	if(i==0)custo+=quantidade*novoProduto.getPrecoUnitario();
-        custoExtra+= custoExtraMobiliario(novoProduto,quantidade);
-        Scanner scDados = new Scanner(System.in);
-        System.out.println("Deseja continuar a adicionar produtos ao carrinho?");
-        System.out.println("Sim - digite sim");
-        System.out.println("Não - digite 'nao'\n");
-        if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
-        }
-        while(auxiliar[aux2].isBlank()){
-            aux2++;
-        }
-        simNao=auxiliar[aux2];
-        if(simNao.equals("nao"))aux=1; 
-        }
-        
-        
+
         precoTransporte += custoTransporte(cliente, custo);
         precoTransporte += custoExtra;
         System.out.println("O preço é " + custo + " euros");
-        System.out.println("O custo do transporte é " + precoTransporte+ " euros");
+        System.out.println("O custo do transporte é " + precoTransporte + " euros");
         custoTotal = custo + precoTransporte;
-        Compra novaCompra = new Compra(custoTotal,produtosComprados,hoje);
+        Compra novaCompra = new Compra(custoTotal, produtosComprados, hoje);
         return novaCompra;
     }
+
+    /**
+     * method that asks the user for the name of a product, and checks if it is
+     * available in the list of products, otherwise it asks again to insert
+     * another name, until the name of the product inserted is in the list of
+     * products
+     *
+     * @param produtosEmStock ArrayList of produtcts
+     * @return product
+     */
     public Produto pedeProduto(ArrayList<Produto> produtosEmStock) {
-        String nomeProduto=" ", auxiliar[]={};
+        String nomeProduto = " ", auxiliar[] = {};
 
-        int i=0,aux=0;
+        int i = 0, aux = 0;
 
-        Produto produto= new Produto();
+        Produto produto = new Produto();
         Produto produtoAux = new Produto();
 
         System.out.println("Que produto deseja comprar?");
         Scanner scDados = new Scanner(System.in);
-        if(scDados.hasNext()){
-            auxiliar=scDados.nextLine().split("\s");
+        if (scDados.hasNext()) {
+            auxiliar = scDados.nextLine().split("\s");
         }
-        while(auxiliar[aux].isBlank()){
+        while (auxiliar[aux].isBlank()) {
             aux++;
         }
-        nomeProduto=auxiliar[aux];
+        nomeProduto = auxiliar[aux];
 
-        for(Produto p: produtosEmStock){
-            if(p.getNome().equals(nomeProduto)){
-                produto=p;
-            }
-            else{
+        for (Produto p : produtosEmStock) {
+            if (p.getNome().equals(nomeProduto)) {
+                produto = p;
+            } else {
                 i++;
             }
         }
 
-        if(i==produtosEmStock.size()){
+        if (i == produtosEmStock.size()) {
             System.out.println("O produto que deseja não se encontra disponível em stock");
-            produtoAux=pedeProduto(produtosEmStock);
+            produtoAux = pedeProduto(produtosEmStock);
             return produtoAux;
         }
 
         return produto;
     }
+
+    /**
+     * method that asks the user for the desired quantity of the product, and
+     * checks if the quantity is available in stock, otherwise it will ask again
+     * for a quantity that is available
+     *
+     * @param produto produtct
+     * @return amount
+     */
     public int pedeQuantidade(Produto produto) {
         int quantidade = 0, stock;
         int quantidadeAux = 0;
@@ -259,53 +279,80 @@ public class SuperMercado {
         if (scDados.hasNext()) {
             quantidade = scDados.nextInt();
         }
-        if(produto.getStock()<quantidade){
+        if (produto.getStock() < quantidade) {
             System.out.println("Não há a quantidade disponível em stock");
             quantidadeAux = pedeQuantidade(produto);
             return quantidadeAux;
-        }
-        else{
-            stock=produto.getStock()-quantidade;
+        } else {
+            stock = produto.getStock() - quantidade;
             produto.setStock(stock);
-            if(produto.getStock()==0){
+            if (produto.getStock() == 0) {
                 produtos.remove(produto);
             }
         }
         return quantidade;
     }
 
-
-   
-    public double custoExtraMobiliario(Produto produto,int quantidade){
+    /**
+     * method that receives as parameters a product and the quantity and checks
+     * if the product is of type ProdutoMobiliario, if so returns the extra
+     * value for each product, otherwise returns the extra price equal to 0
+     *
+     * @param produto product
+     * @param quantidade amount
+     * @return price
+     */
+    public double custoExtraMobiliario(Produto produto, int quantidade) {
         double custoExtra = 0;
-        try{
-        ProdutoMobiliario mob = (ProdutoMobiliario)produto;
-        if(mob.getPeso()>15){
-            custoExtra = quantidade * 10.0;
-        }
-        else{
-            return 0;
-        }
-        }catch(ClassCastException x){
-                return 0.0;
-        }
-            
-       return custoExtra; 
-    }
-    public double custoTransporte(Cliente cliente,double preçoCompra){
-        int regularidade=cliente.getRegularidade();
-        double custoTransporte;
-        if(regularidade==1){
-            if(preçoCompra>40.0){
-                custoTransporte=0.0;
+        try {
+            ProdutoMobiliario mob = (ProdutoMobiliario) produto;
+            if (mob.getPeso() > 15) {
+                custoExtra = quantidade * 10.0;
+            } else {
+                return 0;
             }
-            else{custoTransporte=15.0;} 
+        } catch (ClassCastException x) {
+            return 0.0;
         }
-        else custoTransporte=20.0;
-        
+
+        return custoExtra;
+    }
+
+    /**
+     * method that receives as parameters a customer and the price of the
+     * purchase made, and checks if it is regular or not. If regular and the
+     * price is over 40 euros, returns 0 otherwise returns 15. If it's not
+     * regular, returns 20.
+     *
+     * @param cliente cliente
+     * @param preçoCompra price of purchase
+     * @return price
+     */
+    public double custoTransporte(Cliente cliente, double preçoCompra) {
+        int regularidade = cliente.getRegularidade();
+        double custoTransporte;
+        if (regularidade == 1) {
+            if (preçoCompra > 40.0) {
+                custoTransporte = 0.0;
+            } else {
+                custoTransporte = 15.0;
+            }
+        } else {
+            custoTransporte = 20.0;
+        }
+
         return custoTransporte;
     }
-    
+
+    /**
+     * method that receives as parameters the email and the purchase made, and
+     * adds to the shopping list of the customer who has the email, the purchase
+     * made
+     *
+     * @param compra purchase
+     * @param email email
+     * @return true or false
+     */
     public boolean atualizaBaseDados(Compra compra, String email) {
         for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
@@ -315,28 +362,48 @@ public class SuperMercado {
         }
         return false;
     }
-    public void consultaCompra(String email,Data dataHoje){
+
+    /**
+     * method that receives as parameters an email and current date, and shows
+     * the purchases previously made by the customer who has the email
+     *
+     * @param email email
+     * @param dataHoje current date
+     */
+    public void consultaCompra(String email, Data dataHoje) {
         for (BaseDados c : clientes) {
             if (c.getCliente().getEmail().equals(email)) {
                 ArrayList<Compra> compras = c.getCompras();
-                for(Compra d: compras){
+                for (Compra d : compras) {
                     Data x = d.getData();
-                    if(x.verificaData(dataHoje,x)==0){
-                        System.out.println(d);  
+                    if (x.verificaData(dataHoje, x) == 0) {
+                        System.out.println(d);
                     }
                 }
             }
+        }
     }
-    }
-    public void mostraPromo(){
+
+    /**
+     * method that shows the promotions currently active
+     */
+    public void mostraPromo() {
         System.out.println("----------Promoções----------");
-        for(Promocao p: promocao){
-            if(p.getAtiva() == 1){
+        for (Promocao p : promocao) {
+            if (p.getAtiva() == 1) {
                 System.out.println(p);
             }
         }
     }
-    
+
+    /**
+     * method that takes as parameters an ArrayList and an object file, and
+     * writes to the object file given as parameter the objects contained in the
+     * ArrayList
+     *
+     * @param clientes ArrayList of clients
+     * @param fobj database object file
+     */
     public void updateFichClients(ArrayList<BaseDados> clientes, File fobj) {
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
@@ -350,6 +417,15 @@ public class SuperMercado {
             System.out.println("Erro a escrever para o ficheiro.");
         }
     }
+
+    /**
+     * method that takes as parameters an ArrayList and an object file, and
+     * writes to the object file given as parameter the objects contained in the
+     * ArrayList
+     *
+     * @param produtos ArrayList of products
+     * @param fobj products object file
+     */
     public void updateFichProducts(ArrayList<Produto> produtos, File fobj) {
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
@@ -363,23 +439,27 @@ public class SuperMercado {
             System.out.println("Erro a escrever para o ficheiro.");
         }
     }
-  
-    
-    public void updateFichPromocao(Data hoje) {
-        File fprom = new File("PromoText.txt");
-        File fObjProm = new File("Promocoes.obj");
-        makeFichPromocao(fprom,fObjProm,hoje);
-        leFicheiroPromocao(promocao,fObjProm);
-    }
-    public void updateFich(){
+
+    /**
+     * method that uses the updateFichClients and updateFichProducts methods to
+     * update the files
+     */
+    public void updateFich() {
         File fObjClients = new File("Clientes.obj");
         File fObjProducts = new File("Produtos.obj");
-        updateFichProducts(produtos,fObjProducts);
-        updateFichClients(clientes,fObjClients);
-        
+        updateFichProducts(produtos, fObjProducts);
+        updateFichClients(clientes, fObjClients);
+
     }
-    
-    public ArrayList<BaseDados> readFichClients(File f) {
+
+    /**
+     * method that takes as parameters a text file, reads it and creates an
+     * ArrayList of objects.
+     *
+     * @param f text file
+     * @return ArrayList of BaseDados
+     */
+    public ArrayList<BaseDados> readFichClientsTxt(File f) {
         ArrayList<BaseDados> clientes;
         clientes = new ArrayList<>();
         if (f.exists() && f.isFile()) {
@@ -417,7 +497,15 @@ public class SuperMercado {
         return clientes;
     }
 
-    public ArrayList<Promocao> readFichProm(File f, Data hoje) {
+    /**
+     * method that receives as parameters a text file and the current date,
+     * reads and creates an ArrayList of objects.
+     *
+     * @param f text file
+     * @param hoje current date
+     * @return ArrayList of promotions
+     */
+    public ArrayList<Promocao> readFichPromTxt(File f, Data hoje) {
         ArrayList<Promocao> prom;
         prom = new ArrayList<>();
         if (f.exists() && f.isFile()) {
@@ -440,7 +528,7 @@ public class SuperMercado {
                         Data inicio = new Data(Integer.parseInt(aux2[0]), Integer.parseInt(aux2[1]), Integer.parseInt(aux2[2]));
                         aux3 = arr[3].split("-");
                         Data fim = new Data(Integer.parseInt(aux3[0]), Integer.parseInt(aux3[1]), Integer.parseInt(aux3[2]));
-                        PagueMenos prom1 = new PagueMenos(nomeProduto,inicio, fim, hoje);
+                        PagueMenos prom1 = new PagueMenos(nomeProduto, inicio, fim, hoje);
                         prom.add(prom1);
                     } else if (arr[0].equals("PAG3")) {
                         nomeProduto = arr[1];
@@ -448,7 +536,7 @@ public class SuperMercado {
                         Data inicio = new Data(Integer.parseInt(aux2[0]), Integer.parseInt(aux2[1]), Integer.parseInt(aux2[2]));
                         aux3 = arr[3].split("-");
                         Data fim = new Data(Integer.parseInt(aux3[0]), Integer.parseInt(aux3[1]), Integer.parseInt(aux3[2]));
-                        Pague3Leve4 promx = new Pague3Leve4(nomeProduto,inicio, fim, hoje);
+                        Pague3Leve4 promx = new Pague3Leve4(nomeProduto, inicio, fim, hoje);
                         prom.add(promx);
                     }
                 }
@@ -465,7 +553,14 @@ public class SuperMercado {
         return prom;
     }
 
-    public ArrayList<Produto> readFichProducts(File f) {
+    /**
+     * method that takes as parameters a text file, reads it and creates an
+     * ArrayList of objects.
+     *
+     * @param f text file
+     * @return ArrayList of products
+     */
+    public ArrayList<Produto> readFichProductsTxt(File f) {
         ArrayList<Produto> product;
         product = new ArrayList<>();
         if (f.exists() && f.isFile()) {
@@ -503,8 +598,15 @@ public class SuperMercado {
         return product;
     }
 
+    /**
+     * method that takes as parameters the current date, the text file and an
+     * object file and creates the object file passed as parameter.
+     *
+     * @param ftext database text file
+     * @param fobj database object file
+     */
     public void makeFichClients(File ftext, File fobj) {
-        ArrayList<BaseDados> list = readFichClients(ftext);
+        ArrayList<BaseDados> list = readFichClientsTxt(ftext);
         try {
             FileOutputStream fos = new FileOutputStream(fobj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -518,10 +620,18 @@ public class SuperMercado {
         }
     }
 
-    public void makeFichPromocao(File ftext, File fobj, Data hoje) {
-        ArrayList<Promocao> list = readFichProm(ftext,hoje);
+    /**
+     * method that takes as parameters the current date, the text file and an
+     * object file and creates the object file passed as parameter.
+     *
+     * @param fText promotion text file
+     * @param fObj promotion objects file
+     * @param hoje current date
+     */
+    public void makeFichPromocao(File fText, File fObj, Data hoje) {
+        ArrayList<Promocao> list = readFichPromTxt(fText, hoje);
         try {
-            FileOutputStream fos = new FileOutputStream(fobj);
+            FileOutputStream fos = new FileOutputStream(fObj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(list);
             oos.close();
@@ -533,10 +643,17 @@ public class SuperMercado {
         }
     }
 
-    public void makeFichProducts(File ftext, File fobj) {
-        ArrayList<Produto> list = readFichProducts(ftext);
+    /**
+     * method that takes as parameters the text file and an object file and
+     * creates the object file passed as parameter.
+     *
+     * @param fText products
+     * @param fObj products object file
+     */
+    public void makeFichProducts(File fText, File fObj) {
+        ArrayList<Produto> list = readFichProductsTxt(fText);
         try {
-            FileOutputStream fos = new FileOutputStream(fobj);
+            FileOutputStream fos = new FileOutputStream(fObj);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(list);
             oos.close();
@@ -548,13 +665,21 @@ public class SuperMercado {
         }
     }
 
-    public void leFicheiroPromocao(ArrayList<Promocao> listaPromocao, File fobj) {
+    /**
+     * method that receives as parameters a promotion objects file and an
+     * ArrayList of objects. Reads the object file and puts the read objects in
+     * the ArrayList
+     *
+     * @param listaPromocao ArrayList of promotion
+     * @param fObj promotion objects file
+     */
+    public void readFichPromocao(ArrayList<Promocao> listaPromocao, File fObj) {
         try {
-            FileInputStream fis = new FileInputStream(fobj);
+            FileInputStream fis = new FileInputStream(fObj);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<Promocao> x = (ArrayList<Promocao>) ois.readObject();
-            for (Promocao a : x) {
-                listaPromocao.add(a);
+            ArrayList<Promocao> promocoesLidas = (ArrayList<Promocao>) ois.readObject();
+            for (Promocao p : promocoesLidas) {
+                listaPromocao.add(p);
             }
             ois.close();
             fis.close();
@@ -567,12 +692,20 @@ public class SuperMercado {
         }
     }
 
-    public void leFicheiroClients(ArrayList<BaseDados> listaClientes, File fobj) {
+    /**
+     * method that receives as parameters a database object file and an
+     * ArrayList of objects. Reads the object file and puts the read objects in
+     * the ArrayList
+     *
+     * @param listaClientes ArrayList of BaseDados
+     * @param fObj database object file
+     */
+    public void readFichClients(ArrayList<BaseDados> listaClientes, File fObj) {
         try {
-            FileInputStream fis = new FileInputStream(fobj);
+            FileInputStream fis = new FileInputStream(fObj);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<BaseDados> x = (ArrayList<BaseDados>) ois.readObject();
-            for (BaseDados c : x) {
+            ArrayList<BaseDados> clientesLidos = (ArrayList<BaseDados>) ois.readObject();
+            for (BaseDados c : clientesLidos) {
                 listaClientes.add(c);
             }
             ois.close();
@@ -580,20 +713,27 @@ public class SuperMercado {
         } catch (FileNotFoundException ex) {
             System.out.println("Erro a abrir ficheiro.");
         } catch (IOException ex) {
-            System.out.println("bbbb");
             System.out.println("Erro a ler ficheiro.");
         } catch (ClassNotFoundException ex) {
             System.out.println("Erro a converter objeto.");
         }
     }
 
-    public void leFicheiroProducts(ArrayList<Produto> listaProdutos, File fobj) {
+    /**
+     * method that receives as parameters a products object file and an
+     * ArrayList of objects. Reads the object file and puts the read objects in
+     * the ArrayList
+     *
+     * @param listaProdutos ArrayList of produtcs
+     * @param fObj products object file
+     */
+    public void readFichProducts(ArrayList<Produto> listaProdutos, File fObj) {
         try {
-            FileInputStream fis = new FileInputStream(fobj);
+            FileInputStream fis = new FileInputStream(fObj);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<Produto> x = (ArrayList<Produto>) ois.readObject();
-            for (Produto c : x) {
-                listaProdutos.add(c);
+            ArrayList<Produto> produtosLidos = (ArrayList<Produto>) ois.readObject();
+            for (Produto p : produtosLidos) {
+                listaProdutos.add(p);
             }
             ois.close();
             fis.close();
@@ -605,31 +745,41 @@ public class SuperMercado {
             System.out.println("Erro a converter objeto.");
         }
     }
-    public void ficheiroPromocao(Data hoje){
-            File fprom = new File("PromoText.txt");
-            File fObjProm = new File("Promocoes.obj");
-            makeFichPromocao(fprom,fObjProm,hoje);
-            leFicheiroPromocao(promocao,fObjProm);
+
+    /**
+     * method that receives as parameter the current date, verifies if the
+     * promotion objects file exists, if it exists just read it, otherwise
+     * creates it and reads the files.
+     *
+     * @param hoje current date
+     */
+    public void ficheiroPromocao(Data hoje) {
+        File fProm = new File("PromoText.txt");
+        File fObjProm = new File("Promocoes.obj");
+        makeFichPromocao(fProm, fObjProm, hoje);
+        readFichPromocao(promocao, fObjProm);
     }
+
+    /**
+     * method that takes as parameter the current date, checks if the object
+     * file exists, if it does, just reads it, otherwise creates and reads the .
+     *
+     * @param hoje current date
+     */
     public void ficheiros(Data hoje) {
-        File fclientes = new File("ClientesText.txt");
-        /*File fprom = new File("PromoText.txt");*/
-        File fproducts = new File("ProdutosText.txt");
-        /*File fObjProm = new File("Promocoes.obj");*/
+        File fClientes = new File("ClientesText.txt");
+        File fProducts = new File("ProdutosText.txt");
         File fObjClients = new File("Clientes.obj");
         File fObjProducts = new File("Produtos.obj");
 
-        if (!fObjProducts.exists()||!fObjClients.exists()) {
-            makeFichClients(fclientes, fObjClients);
-            /*makeFichPromocao(fprom, fObjProm, hoje);*/
-            makeFichProducts(fproducts, fObjProducts);
-            leFicheiroClients(clientes, fObjClients);
-            /*leFicheiroPromocao(promocao, fObjProm);*/
-            leFicheiroProducts(produtos, fObjProducts);
+        if (!fObjProducts.exists() || !fObjClients.exists()) {
+            makeFichClients(fClientes, fObjClients);
+            makeFichProducts(fProducts, fObjProducts);
+            readFichClients(clientes, fObjClients);
+            readFichProducts(produtos, fObjProducts);
         } else {
-            leFicheiroClients(clientes, fObjClients);
-            /*leFicheiroPromocao(promocao, fObjProm);*/
-            leFicheiroProducts(produtos, fObjProducts);
+            readFichClients(clientes, fObjClients);
+            readFichProducts(produtos, fObjProducts);
         }
     }
 }
