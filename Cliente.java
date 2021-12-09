@@ -19,7 +19,8 @@ public class Cliente implements Serializable {
     }
 
     /**
-     * constructor of the client object
+     * constructor of the client object that receives as parameters the
+     * name,adress ,email,phone number ,birth date and the type of client
      *
      * @param nome Name
      * @param morada Adress
@@ -91,3 +92,4 @@ public class Cliente implements Serializable {
     }
 
 }
+
