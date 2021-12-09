@@ -68,7 +68,7 @@ public class SuperMercado {
     }
 
     /**
-     * Interface of the programme where you can login and perform all the
+     * Menu of the programme where you can login and perform all the
      * operations of the programme, make a purchase, see the previous purchases,
      * change the date, view the products in promotion and exit the programme
      */
@@ -135,7 +135,7 @@ public class SuperMercado {
      * client that has the given email
      *
      * @param email email
-     * @return cliente
+     * @return client
      */
     public Cliente cliente(String email) {
         Cliente cliente = new Cliente();
@@ -156,7 +156,7 @@ public class SuperMercado {
      *
      * @param hoje current date
      * @param cliente cliente
-     * @return compra
+     * @return purchase
      */
     public Compra compra(Data hoje, Cliente cliente) {
         ArrayList<Produto> produtosComprados = new ArrayList<>();
@@ -268,7 +268,7 @@ public class SuperMercado {
      * checks if the quantity is available in stock, otherwise it will ask again
      * for a quantity that is available
      *
-     * @param produto produtct
+     * @param produto product
      * @return amount
      */
     public int pedeQuantidade(Produto produto) {
@@ -324,7 +324,7 @@ public class SuperMercado {
      * price is over 40 euros, returns 0 otherwise returns 15. If it's not
      * regular, returns 20.
      *
-     * @param cliente cliente
+     * @param cliente client
      * @param preçoCompra price of purchase
      * @return price
      */
