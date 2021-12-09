@@ -15,7 +15,13 @@ public class Data implements Serializable {
     public Data() {
 
     }
-
+    /**
+     * constructor that receives as parameters the day, month and the year
+     *
+     * @param dia day
+     * @param mes month
+     * @param ano year
+     */
     public Data(int dia, int mes, int ano) {
         this.dia = dia;
         this.mes = mes;
