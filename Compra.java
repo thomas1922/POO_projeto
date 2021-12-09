@@ -1,6 +1,3 @@
-package supermercado;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Compra implements Serializable {
@@ -10,8 +7,9 @@ public class Compra implements Serializable {
     private ArrayList<Produto> produtos;
 
     /**
-     * constructor de um compra que recebe como parametros o preço, a data da
-     * compra e a arrayList de produtos com os produtos comprados
+     * constructor of a purchase that receives as parameters the price, the date
+     * of the purchase and the arrayList of products with the bought
+     * products.
      *
      * @param preco price
      * @param produtos arrayList of objects with the type product
