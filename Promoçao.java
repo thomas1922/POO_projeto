@@ -15,7 +15,7 @@ public abstract class Promocao implements Serializable {
      * current date. The promotion is activated or not using the method
      * ativaPromoção that receives as parameter the current date
      *
-     * @param nomeProduto Name
+     * @param nomeProduto name
      * @param dataInicio initial date
      * @param dataFim final date
      * @param dataHoje current date
